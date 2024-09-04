@@ -1,17 +1,11 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
-const { mapAlbumDBToModel } = require('../../utils');
 const NotFoundError = require('../../exceptions/NotFoundError');
 
 class AlbumService {
-  constructor(songsService) {
+  constructor() {
     this._pool = new Pool();
-    this._songsService = songsService;
-  }
-
-  getSongsFromSongsService() {
-    return this._songsService.getSongsWithAlbumId();
   }
 
   async addAlbum({ name, year }) {
@@ -20,7 +14,7 @@ class AlbumService {
     const updatedAt = createdAt;
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5, $6) RETURNING id',
+      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5) RETURNING id',
       values: [id, name, year, createdAt, updatedAt],
     };
 
@@ -33,19 +27,47 @@ class AlbumService {
     return result.rows[0].id;
   }
 
-  async getAlbumById(id) {
-    const query = {
-      text: 'SELECT * FROM albums WHERE id = $1',
-      values: [id],
-    };
+  async getAlbumById(albumId) {
+    const query = `SELECT 
+            albums.id AS id,
+            albums.name AS name,
+            albums.year AS year,
+            songs.id AS song_id,
+            songs.title AS song_title,
+            songs.performer AS song_performer
+          FROM 
+              albums
+          LEFT JOIN 
+              songs 
+          ON 
+              albums.id = songs.album_id
+          WHERE 
+            albums.id = $1;`;
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query, [albumId]);
 
-    if (!result.rows.length) {
+    if (!rows.length) {
       throw new NotFoundError('Album tidak ditemukan');
     }
- 
-    return result.rows.map(mapAlbumDBToModel)[0];
+
+    const album = {
+      id: rows[0].id,
+      name: rows[0].name,
+      year: rows[0].year,
+      songs: [],
+    };
+
+    rows.forEach((row) => {
+      if (row.song_id) {
+        album.songs.push({
+          id: row.song_id,
+          title: row.song_title,
+          performer: row.song_performer,
+        });
+      }
+    });
+    
+    return album;
   }
 
   async editAlbumById(id, { name, year }) {
@@ -74,8 +96,6 @@ class AlbumService {
       throw new NotFoundError('Album gagal dihapus. Id tidak ditemukan');
     }
   }
-
-
 }
 
 module.exports = AlbumService;

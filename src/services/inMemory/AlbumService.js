@@ -40,7 +40,7 @@ class AlbumsService {
 
     return {
       ...album,
-      songs: songsFromSongsService.filter((song) => song.albumId === album.id)
+      songs: songsFromSongsService.filter((song) => song.albumId === album.id),
     };
   }
   

@@ -36,25 +36,22 @@ class SongsService {
     let filteredSongs = this._songs;
 
     if (title) {
-      filteredSongs = filteredSongs.filter((song) =>
-        song.title.toLowerCase().includes(title.toLowerCase())
-      );
+      filteredSongs = filteredSongs
+        .filter((song) => song.title.toLowerCase().includes(title.toLowerCase()));
     }
 
     if (performer) {
-      filteredSongs = filteredSongs.filter((song) =>
-        song.performer.toLowerCase().includes(performer.toLowerCase())
-      );
+      filteredSongs = filteredSongs
+        .filter((song) => song.performer
+          .toLowerCase()
+          .includes(performer.toLowerCase()));
     }
 
-    return filteredSongs.map((song) => {
-      const { id, title, performer } = song;
-      return {
-        id,
-        title,
-        performer,
-      };
-    });
+    return filteredSongs.map((song) => ({
+      id: song.id,
+      title: song.title,
+      performer: song.performer,
+    }));
   }
 
   getSongsWithAlbumId() {
