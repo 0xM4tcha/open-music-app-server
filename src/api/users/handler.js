@@ -25,4 +25,3 @@ class UsersHandler {
 }
 
 module.exports = UsersHandler;
-
