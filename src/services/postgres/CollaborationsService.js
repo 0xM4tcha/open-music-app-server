@@ -3,7 +3,6 @@ const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
 
-
 class CollaborationsService {
   constructor() {
     this._pool = new Pool();
@@ -20,7 +19,7 @@ class CollaborationsService {
 
     // If no user found, throw an error
     if (!userCheckResult.rows.length) {
-        throw new NotFoundError('User tidak ditemukan');
+      throw new NotFoundError('User tidak ditemukan');
     }
 
     const id = `collab-${nanoid(16)}`;
@@ -33,7 +32,7 @@ class CollaborationsService {
     const result = await this._pool.query(query);
 
     if (!result.rows.length) {
-        throw new InvariantError('Kolaborasi gagal ditambahkan');
+      throw new InvariantError('Kolaborasi gagal ditambahkan');
     }
 
     return result.rows[0].id;

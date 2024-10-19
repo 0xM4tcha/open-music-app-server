@@ -2,7 +2,7 @@ const InvariantError = require('../../exceptions/InvariantError');
 const {
   PostPlaylistPayloadSchema,
   PostSongToPlaylistPayloadSchema,
-  DeleteSongFromPlaylistPayloadSchema
+  DeleteSongFromPlaylistPayloadSchema,
 } = require('./schema');
 
 const PlaylistsValidator = {

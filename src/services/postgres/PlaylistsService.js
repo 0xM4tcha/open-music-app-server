@@ -108,7 +108,7 @@ class PlaylistsService {
     const result = await this._pool.query(query);
 
     if (!result.rows.length) {
-      throw new InvariantError(`Song gagal ditambahkan di Playlist`);
+      throw new InvariantError('Song gagal ditambahkan di Playlist');
     }
 
     return result.rows[0].id;
@@ -138,7 +138,7 @@ class PlaylistsService {
     const result = await this._pool.query(query);
 
     if (!result.rows.length) {
-      throw new NotFoundError(`Song pada Playlists tidak ditemukan`);
+      throw new NotFoundError('Song pada Playlists tidak ditemukan');
     }
 
     return {
@@ -150,7 +150,7 @@ class PlaylistsService {
         title: row.song_title,
         performer: row.song_performer,
       })),
-    }
+    };
   }
 
   async deleteSongFromPlaylist(playlistId, songId) {

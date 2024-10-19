@@ -43,7 +43,7 @@ class PlaylistsHandler {
     };
   }
 
-  async deletePlaylistByIdHandler(request, h) {
+  async deletePlaylistByIdHandler(request) {
     const { playlistId } = request.params;
     const { id: credentialId } = request.auth.credentials;
     
@@ -91,21 +91,21 @@ class PlaylistsHandler {
     };
   }
 
-  async deleteSongFromPlaylistHandler(request, h) {
-      const { playlistId } = request.params;
-      const { songId } = request.payload;
-      const { id: credentialId } = request.auth.credentials;
+  async deleteSongFromPlaylistHandler(request) {
+    const { playlistId } = request.params;
+    const { songId } = request.payload;
+    const { id: credentialId } = request.auth.credentials;
 
-      this._validator.validateDeleteSongFromPlaylistPayloadSchema(request.payload);
+    this._validator.validateDeleteSongFromPlaylistPayloadSchema(request.payload);
 
-      await this._service.verifySongId(songId);
-      await this._service.verifyPlaylistAccess(playlistId, credentialId);
-      await this._service.deleteSongFromPlaylist(playlistId, songId);
-   
-      return {
-        status: 'success',
-        message: 'Song berhasil dihapus dari Playlist',
-      };
+    await this._service.verifySongId(songId);
+    await this._service.verifyPlaylistAccess(playlistId, credentialId);
+    await this._service.deleteSongFromPlaylist(playlistId, songId);
+  
+    return {
+      status: 'success',
+      message: 'Song berhasil dihapus dari Playlist',
+    };
   }
 }
 
