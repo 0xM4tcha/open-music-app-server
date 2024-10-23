@@ -125,7 +125,7 @@ class AlbumService {
       throw new NotFoundError('Album tidak ditemukan');
     }
 
-    const isAlreadyLike = resultCheck.rows[0].likes.includes(credentialId);
+    const isAlreadyLike = resultCheck.rows[0]?.likes?.includes(credentialId) || false;
 
     if (isAlreadyLike) {
       throw new InvariantError('Gagal menyukai, Album sudah disukai');
@@ -163,7 +163,7 @@ class AlbumService {
         throw new NotFoundError('Album tidak ditemukan');
       }
 
-      const likes = result.rows[0].likes.length;
+      const likes = result.rows[0]?.likes?.length || 0;
 
       await this._cacheService.set(`likes:${albumId}`, JSON.stringify(likes));
   
