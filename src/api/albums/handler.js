@@ -46,6 +46,7 @@ class AlbumsHandler {
     this._validator.validateAlbumPayload(request.payload);
     const { id } = request.params;
     await this._service.editAlbumById(id, request.payload);
+
     return {
       status: 'success',
       message: 'Album berhasil diperbarui',
@@ -62,38 +63,52 @@ class AlbumsHandler {
     };
   }
 
-  async postLikesAlbumByIdHandler(request) {
+  async postLikesAlbumByIdHandler(request, h) {
     const { id } = request.params;
     const { id: credentialId } = request.auth.credentials;
     await this._service.postLikesAlbumById(id, credentialId);
 
-    return {
+    const response = h.response({
       status: 'success',
       message: 'Album berhasil disukai',
-    };
+    });
+
+    response.code(201);
+    return response;
   }
 
-  async getAlbumLikeCountHandler(request) {
+  async getAlbumLikeCountHandler(request, h) {
     const { id } = request.params;
-    const likes = await this._service.getAlbumLikeCount(id);
+    const { likes, isCache } = await this._service.getAlbumLikeCount(id);
 
-    return {
+    const response = h.response({
       status: 'success',
       data: {
         likes,
       },
-    };
+    });
+
+    if (isCache) {
+      response.header('X-Data-Source', 'cache');
+    }
+
+    response.code(200);
+
+    return response;
   }
 
-  async deleteLikesAlbumByIdHandler(request) {
+  async deleteLikesAlbumByIdHandler(request, h) {
     const { id } = request.params;
     const { id: credentialId } = request.auth.credentials;
     await this._service.deleteLikesAlbumById(id, credentialId);
 
-    return {
+    const response = h.response({
       status: 'success',
       message: 'Menyukai Album berhasil dibatalkan',
-    };
+    });
+
+    response.code(200);
+    return response;
   }
 }
 
