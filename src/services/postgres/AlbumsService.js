@@ -111,6 +111,67 @@ class AlbumService {
       throw new NotFoundError('Album gagal dihapus. Id tidak ditemukan');
     }
   }
+
+  async postLikesAlbumById(albumId, credentialId) {
+    const queryForCheck = {
+      text: 'SELECT * FROM albums WHERE id = $1',
+      values: [albumId],
+    };
+
+    const resultCheck = await this._pool.query(queryForCheck);
+
+    if (!resultCheck.rows.length) {
+      throw new NotFoundError('Album tidak ditemukan');
+    }
+
+    const isAlreadyLike = resultCheck.rows[0].likes.includes(credentialId);
+
+    if (isAlreadyLike) {
+      throw new InvariantError('Gagal menyukai, Album sudah disukai');
+    }
+
+    const queryForUpdate = {
+      text: 'UPDATE albums SET likes = array_append(likes, $2) WHERE id = $1 RETURNING *',
+      values: [albumId, credentialId],
+    };
+
+    await this._pool.query(queryForUpdate);
+  }
+
+  async getAlbumLikeCount(albumId) {
+    const query = {
+      text: 'SELECT * FROM albums WHERE id = $1',
+      values: [albumId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Album tidak ditemukan');
+    }
+
+    return result.rows[0].likes.length;
+  }
+
+  async deleteLikesAlbumById(albumId, credentialId) {
+    const queryForCheck = {
+      text: 'SELECT * FROM albums WHERE id = $1',
+      values: [albumId],
+    };
+
+    const resultCheck = await this._pool.query(queryForCheck);
+
+    if (!resultCheck.rows.length) {
+      throw new NotFoundError('Album tidak ditemukan');
+    }
+
+    const queryForUpdate = {
+      text: 'UPDATE albums SET likes = array_remove(likes, $2) WHERE id = $1 RETURNING *',
+      values: [albumId, credentialId],
+    };
+
+    await this._pool.query(queryForUpdate);
+  }
 }
 
 module.exports = AlbumService;
